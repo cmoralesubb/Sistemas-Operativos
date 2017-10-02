@@ -16,14 +16,12 @@ byte dist_t =;
 
 
 //VARIABLES DE MOTORES
-byte uno_A=4;
-byte uno_B=5;
-byte p1=9;
-byte dos_A=7;
-byte dos_B=8;
-byte p2=10;
-byte se=6;
-
+int PWM1=7;
+int motor1A = 22; 
+int motor1B = 24; 
+int PWM2=2;
+int motor2A=26;
+int motor2B=28;
 
 //VARIABLES DE CONDICIONES
 byte i,j,k;
@@ -59,47 +57,30 @@ void setup() {
   pinMode(dist_der_cen, INPUT);
   
   //Inicializacion de Inputs de Motor
-  pinMode(uno_A,OUTPUT);
-  pinMode(uno_B,OUTPUT);
-  pinMode(p1,OUTPUT);
-  pinMode(dos_A,OUTPUT);
-  pinMode(dos_B,OUTPUT);
-  pinMode(p2,OUTPUT);
-  pinMode(se,OUTPUT);
-  digitalWrite(se,HIGH);
+  pinMode(motor1A, OUTPUT);   
+  pinMode(motor1B, OUTPUT);  
+  pinMode(PWM1, OUTPUT);
+  pinMode(motor2A, OUTPUT);   
+  pinMode(motor2B, OUTPUT);  
+  pinMode(PWM2, OUTPUT);     
   
   Serial.println("Setup");
   delay(3000);
 }
 
-/*
-  analogRead(dist_izq)
-  analogRead(dist_izq_cen)
-  analogRead(dist_der_cen)
-  analogRead(dist_der)
-  
-  byte uno_A=4;
-  byte uno_B=5;
-  byte P1=9;
-  byte dos_A=7;
-  byte dos_B=8;
-  byte P2=10;
-  byte SE=6;
-*/
+
 
 void loop() {
   
-  while(calculo_dist()>distancia_min){
+  while(calculo_dist_sen_der()>distancia_min){
     Serial.println("girando");
     girar(250);
   }
   
-  girando=false;
-  
   //0 0 0
   if (aux_linea > linea && analogRead(lin_d_der) > linea && aux_linea > linea ) {
     Serial.println("leyendo pista");
-     avanzar(130,130,100);
+    //avanzar(130,130,100);
     if (calculo_dist<distancia_min){
       Serial.println("Empujando");
       empujar(250,250,100);
@@ -114,7 +95,7 @@ void loop() {
 
   //0 1 0
   if (aux_linea > linea && analogRead(lin_d_der) < linea && aux_linea> linea ) {
-    retroceder(230,230,500);
+    retroceder(230,230,1000);
     Serial.println("retroceder");
   }
   
@@ -146,50 +127,37 @@ void loop() {
 
 
 void avanzar(byte vel_izquierda,byte vel_derecha ,short tiempo) {
-  analogWrite(p2,vel_izquierda);
-  analogWrite(p1,vel_derecha);
-
-  digitalWrite(uno_A,HIGH);
-  digitalWrite(uno_B,LOW);
-
-  digitalWrite(dos_A,HIGH);
-  digitalWrite(dos_B,LOW);
-
-  delay(tiempo);
+    digitalWrite(motor1A, HIGH);
+    digitalWrite(motor1B, LOW);
+    analogWrite(PWM1,vel_izquierda);
+    //digitalWrite(PWM1,HIGH);
+    digitalWrite(motor2A, HIGH);
+    digitalWrite(motor2B, LOW);
+    analogWrite(PWM2,vel_derecha);
 }
-
 
 void empujar(byte vel_izquierda,byte vel_derecha ,short tiempo) {
-  if(empujando==false){
-      analogWrite(p2,vel_izquierda);
-      analogWrite(p1,vel_derecha);
-
-      digitalWrite(uno_A,HIGH);
-      digitalWrite(uno_B,LOW);
-
-      digitalWrite(dos_A,HIGH);
-      digitalWrite(dos_B,LOW);
-
-      empujando=true;
+    while(aux_linea > linea && analogRead(lin_d_der) > linea && aux_linea > linea ){
+      digitalWrite(motor1A, HIGH);
+      digitalWrite(motor1B, LOW);
+      analogWrite(PWM1,vel_izquierda);
+      //digitalWrite(PWM1,HIGH);
+      digitalWrite(motor2A, HIGH);
+      digitalWrite(motor2B, LOW);
+      analogWrite(PWM2,vel_derecha);
       delay(tiempo);
-  }else if(){
-      delay(tiempo);
-  }
-
-  
+    }
+     
 }
-
 
 
 void retroceder(byte vel_izquierda,byte vel_derecha,short tiempo) {
-  analogWrite(p2,vel_izquierda);
-  analogWrite(p1,vel_derecha);
-
-  digitalWrite(uno_A,LOW);
-  digitalWrite(uno_B,HIGH);
-
-  digitalWrite(dos_A,LOW);
-  digitalWrite(dos_B,HIGH);
+digitalWrite(motor1A, LOW);
+    digitalWrite(motor1B, HIGH);
+    analogWrite(PWM1,vel_izquierda); // speed at 250
+    digitalWrite(motor2A, LOW);
+    digitalWrite(motor2B, HIGH);
+    analogWrite(PWM2,vel_derecha); // speed at 250
 
   delay(tiempo);
 
@@ -197,25 +165,20 @@ void retroceder(byte vel_izquierda,byte vel_derecha,short tiempo) {
 
 
 void girar(byte velocidad){
-  if(girando == false){
-    analogWrite(p2,velocidad);
-    analogWrite(p1,velocidad);
-
-    digitalWrite(uno_A,LOW);
-    digitalWrite(uno_B,HIGH);
-
-    digitalWrite(dos_A,HIGH);
-    digitalWrite(dos_B,LOW);
-    girando=true;
+  while(){
+    digitalWrite(motor1A, HIGH);
+    digitalWrite(motor1B, LOW);
+    analogWrite(PWM1,vel_izquierda); // speed at 250
+    digitalWrite(motor2A, LOW);
+    digitalWrite(motor2B, HIGH);
+    analogWrite(PWM2,vel_derecha); // speed at 250
     delay(100);
-  }else if (girando != false){
-    delay (100);
   }
 }
 
 
 
-int calculo_dist(){
+int calculo_dist_sen_der(){
   return pow(3027.4/analogRead(dist_der_cen),1.2134);
 }
 
