@@ -62,7 +62,7 @@ byte i;
 int linea=200;
 
 short aux_dist;
-short dist_cm=0; // leera los centimetros de los censores con la funcion pw
+short dist_cm=0; // leera los centimetros de los sensores con la funcion pw
 short dist_sin_cm=0;
 
 //variables estaticas de distancias
@@ -116,18 +116,20 @@ void setup() {
 void loop() {
   Serial.println(analogRead(lin_d_der));
 
-  while(calculo_dist()>distancia_min){
+  while(calculo_dist(dist_der_cen)>distancia_min){
     Serial.println("girando");
     girar(250);
   }
+
   girando=false;
   //0 0 0
   if (aux_linea > linea && analogRead(lin_d_der) > linea && aux_linea > linea ) {
+    Serial.println("leyendo pista");
     Serial.print(linea derecha);
     Serial.print(analogRead(lin_d_der));
-    Serial.println("leyendo pista");
+    
      avanzar(130,130,100);
-    if (calculo_dist()<distancia_min){
+    if (calculo_dist(dist_der_cen)<distancia_min){
       Serial.println("Empujando");
       empujar(250,250,100);
     }
@@ -143,7 +145,7 @@ void loop() {
   */
   //0 1 0
   if (aux_linea > linea && analogRead(lin_d_der) < linea && aux_linea> linea ) {
-    retroceder(230,230,500);
+    retroceder(230,230,700);
     Serial.println("retroceder");
   }
   /*
@@ -235,8 +237,8 @@ void girar(byte velocidad){
 
 
 
-int calculo_dist(){
-  return pow(3027.4/analogRead(dist_der_cen),1.2134);
+int calculo_dist(byte sensor){
+  return pow(3027.4/analogRead(sensor),1.2134);
 }
 
 

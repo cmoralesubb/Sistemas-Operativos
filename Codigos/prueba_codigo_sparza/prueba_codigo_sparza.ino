@@ -33,7 +33,7 @@ byte dist_izq_cen =;
 byte dist_der =;
 byte dist_t =;
 */
-byte dist_der_cen =8;
+byte dist_der_cen =7;
 
 
 // Variables de motores
@@ -59,10 +59,10 @@ byte vel_baja=100;
 byte i;
 
 //Sensor de linea menor->tiende a blanco por tanto marca el limite de la diferencia
-int linea=200;
+int linea=100;
 
 short aux_dist;
-short dist_cm=0; // leera los centimetros de los censores con la funcion pw
+short dist_cm=0; // leera los centimetros de los sensores con la funcion pw
 short dist_sin_cm=0;
 
 //variables estaticas de distancias
@@ -116,19 +116,18 @@ void setup() {
 void loop() {
   Serial.println(analogRead(lin_d_der));
 
-  while(calculo_dist()>distancia_min){
-    Serial.println("girando");
+  while(calculo_dist(dist_der_cen)>distancia_min){
     girar(250);
   }
   girando=false;
   //0 0 0
-  if (aux_linea > linea && analogRead(lin_d_der) > linea && aux_linea > linea ) {
-    Serial.print(linea derecha);
-    Serial.print(analogRead(lin_d_der));
+  while(aux_linea > linea && analogRead(lin_d_der) > linea && aux_linea > linea ) {
     Serial.println("leyendo pista");
-     avanzar(130,130,100);
-    if (calculo_dist()<distancia_min){
-      Serial.println("Empujando");
+    Serial.print("linea_derecha");
+    Serial.print(analogRead(lin_d_der));
+    Serial.println("");
+    avanzar(200,200,100);
+    while(calculo_dist(dist_der_cen) < distancia_min && analogRead(lin_d_der) > linea){
       empujar(250,250,100);
     }
 
@@ -143,8 +142,8 @@ void loop() {
   */
   //0 1 0
   if (aux_linea > linea && analogRead(lin_d_der) < linea && aux_linea> linea ) {
-    retroceder(230,230,500);
-    Serial.println("retroceder");
+    retroceder(230,230,700);
+    
   }
   /*
   //0 1 1
@@ -173,6 +172,7 @@ void loop() {
 
 
 void avanzar(byte vel_izquierda,byte vel_derecha ,short tiempo) {
+  Serial.println("avanzando");
   analogWrite(PWM2,vel_izquierda);
   analogWrite(PWM1,vel_derecha);
 
@@ -187,6 +187,7 @@ void avanzar(byte vel_izquierda,byte vel_derecha ,short tiempo) {
 
 
 void empujar(byte vel_izquierda,byte vel_derecha ,short tiempo) {
+  Serial.println("Empujando");
   analogWrite(PWM2,vel_izquierda);
   analogWrite(PWM1,vel_derecha);
 
@@ -202,6 +203,7 @@ void empujar(byte vel_izquierda,byte vel_derecha ,short tiempo) {
 
 
 void retroceder(byte vel_izquierda,byte vel_derecha,short tiempo) {
+  Serial.println("retroceder");
   analogWrite(PWM2,vel_izquierda);
   analogWrite(PWM1,vel_derecha);
 
@@ -217,6 +219,7 @@ void retroceder(byte vel_izquierda,byte vel_derecha,short tiempo) {
 
 
 void girar(byte velocidad){
+  Serial.println("girando");
   if(girando == false){
   analogWrite(PWM2,vel_izquierda);
   analogWrite(PWM1,vel_derecha);
@@ -235,8 +238,12 @@ void girar(byte velocidad){
 
 
 
-int calculo_dist(){
-  return pow(3027.4/analogRead(dist_der_cen),1.2134);
+int calculo_dist(byte sensor){
+  int distancia;
+  Serial.print(" Distancia");
+  distancia =pow(3027.4/analogRead(sensor),1.2134);
+  Serial.println(distancia);
+  return distancia;
 }
 
 
@@ -287,6 +294,7 @@ void atras(byte vel_izquierda,byte vel_derecha, byte tiempo) {
 
 
 //SIN DEFINIR
+
 
 
 

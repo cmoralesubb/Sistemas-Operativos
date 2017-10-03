@@ -1,4 +1,4 @@
-const int sensorPin = 0;
+int sensorPin = 0;
  int cm;
 void setup() {
   Serial.begin(9600);   //iniciar puerto serie
@@ -7,7 +7,7 @@ void setup() {
  
 void loop(){
   int value = 0;
-  value = analogRead(sensorPin );  //lectura digital de pin
+  value = analogRead(sensorPin);  //lectura analogo de pin
   Serial.print("Normal : ");
   Serial.println(value);
   
@@ -17,6 +17,7 @@ void loop(){
   Serial.println(cm);
   delay(500);
   cm=0;
+  value=0;
   
   
 }

@@ -7,11 +7,11 @@ void loop()
 {
       int val;
       int va2;
-      val=analogRead(A8);   //connect grayscale sensor to Analog 0
-      va2=analogRead(A15);
+      val=analogRead(A0);   //connect grayscale sensor to Analog 0
+      //va2=analogRead(A15);
       Serial.print("Sensor derecha ");
       Serial.println(val);//print the value to serial
       Serial.print("Sensor izquierda ");
-      Serial.println(va2);//print the value to serial        
+      //Serial.println(va2);//print the value to serial        
       delay(1000);
 }
