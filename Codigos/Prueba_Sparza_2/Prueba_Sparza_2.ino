@@ -16,8 +16,6 @@ byte lin_d_izq =15;
 byte lin_d_der =14;
 byte lin_t =13;
 
-
-
 //SENSORES DE DISTANCIA
 
 byte dist_izq_cen =7;
@@ -32,6 +30,9 @@ byte out_dist_izq=37;
 
 byte in_dist_tras=39;
 byte out_dist_tras=41;
+
+
+
 
 // Variables de motores
 byte INA1=22;
@@ -61,8 +62,9 @@ short dist_sin_cm=0;
 //variables estaticas de distancias
 
 byte distancia_minima=40;
-int distancia_maxima=100;
 int distancia_media=60;
+int distancia_maxima=100;
+
 
 byte principio=false;
 
@@ -98,7 +100,7 @@ void setup() {
   delay(3000);
 
  
-
+  atacar_inicio_izquierda();
 
 }
 
@@ -109,57 +111,47 @@ void loop() {
 
 void atacar_inicio_izquierda(){
 
-  if (calculo_dist(dist_izq_cen)<distancia_minima && principio==false){
-    giro_izquierda(200,200); // arreglar el grado de izquierda que queda para que gire un poco
-    principio=true;
-  }
-
   //mientras esta en la pista
-  if(analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t)>linea) {
-    //lee mientras va a la izquierda mirando
-    avanzar(200,200);
-    if(calculo_dist_der()<distancia_media){
-      giro_derecha(200,200); // acomodar hasta encontrar un grado que acomode
-      while(calculo_dist(dist_izq_cen)<distancia_media || calculo_dist(dist_der_cen)<distancia_media && analogRead(lin_d_der)>linea ){
-        avanzar(200,200);
-      }
-    }else if(calculo_dist_izq()<distancia_media){
-      giro_izquierda(200,200);// acomodar hasta encontrar un grado que acomode
-      while(calculo_dist(dist_izq_cen)<distancia_media || calculo_dist(dist_der_cen)<distancia_media && analogRead(lin_d_der)>linea ){
-        avanzar(200,200);
-      }
-    }else if(calculo_dist_tras()<distancia_media){
-      giro_derecha(200,200);// encontrar un grado que acomode y de vuelta completa
+  while(analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t)>linea) {
+    while(calculo_dist(dist_der_cen)>distancia_maxima || calculo_dist(dist_izq_cen)>distancia_maxima ){
+      giro_derecha(200,200);
     }
+
+    while(calculo_dist(dist_der_cen)<distancia_maxima || calculo_dist(dist_izq_cen)<distancia_maxima && analogRead(lin_d_der)>linea && analogRead(lin_d_izq)>linea){
+      avanzar(200,200);
+    }
+
   }
-
-
   //0 0 1 si la trasera detecta la linea 
   if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t) < linea ) {
-    avanzar(200,200);
+   avanzar(200,200);
   }
   
   //0 1 0
   if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) < linea && analogRead(lin_t)> linea ) {
-    retroceder(230,230,700);
-    giro_derecha(200,200); // acomodar cuanto es para una vuelta completa 
+    giro_derecha(200,200);
     
   }
   
   //0 1 1
   if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) < linea && analogRead(lin_t) < linea ) {
-
+    giro_izquierda(200,200);
+   
   }
   //1 0 0
   if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) > linea && analogRead(lin_t) > linea ) {
-
+    giro_derecha(200,200);
+   
   }
   //1 0 1
   if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) > linea && analogRead(lin_t) < linea ) {
+    giro_derecha(200,200);
 
   }
   //1 1 0
   if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) < linea && analogRead(lin_t) > linea ) {
+    retroceder(200,200,700);
+    giro_derecha(200,200);
 
   }
 
@@ -171,54 +163,6 @@ void atacar_inicio_izquierda(){
 
 }
 
-/*
-
-void Estrategia_1(){
-
-
-
-  //0 0 0
-  while(analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t) > linea ) {
-    
-  }
-
-
-  //0 0 1
-  if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t) < linea ) {
-
-
-  }
-  
-  //0 1 0
-  if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) < linea && analogRead(lin_t)> linea ) {
-    retroceder(230,230,700);
-    
-  }
-  
-  //0 1 1
-  if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) < linea && analogRead(lin_t) < linea ) {
-
-  }
-  //1 0 0
-  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) > linea && analogRead(lin_t) > linea ) {
-
-  }
-  //1 0 1
-  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) > linea && analogRead(lin_t) < linea ) {
-
-  }
-  //1 1 0
-  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) < linea && analogRead(lin_t) > linea ) {
-
-  }
-
-  //1 1 1
-  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) < linea && analogRead(lin_t) < linea ) { // Caso Imposible
-
-  }
-
-}
-*/
 
 void avanzar(byte vel_izquierda,byte vel_derecha ) {
   Serial.println("avanzando");
@@ -254,8 +198,8 @@ void retroceder(byte vel_izquierda,byte vel_derecha,short tiempo) {
 
 void girar(byte velocidad_izquierda,byte velocidad_derecha){
 
-  analogWrite(PWM2,vel_izquierda);
-  analogWrite(PWM1,vel_derecha);
+  analogWrite(PWM2,velocidad_izquierda);
+  analogWrite(PWM1,velocidad_derecha);
 
   digitalWrite(INA1,LOW);
   digitalWrite(INB1,HIGH);
@@ -341,8 +285,8 @@ void giro_izquierda(byte vel_izquierda,byte vel_derecha,int tiempo ) {
 
 
 void giro_derecha(byte velocidad_izquierda,byte velocidad_derecha) {
-  analogWrite(PWM2,vel_izquierda);
-  analogWrite(PWM1,vel_derecha);
+  analogWrite(PWM2,velocidad_izquierda);
+  analogWrite(PWM1,velocidad_derecha);
 
   digitalWrite(INA1,LOW);
   digitalWrite(INB1,HIGH);
@@ -355,9 +299,9 @@ void giro_derecha(byte velocidad_izquierda,byte velocidad_derecha) {
 }
 
 
-void atras(byte vel_izquierda,byte vel_derecha) {
-  analogWrite(PWM2,vel_izquierda);
-  analogWrite(PWM1,vel_derecha);
+void atras(byte velocidad_izquierda,byte velocidad_derecha) {
+  analogWrite(PWM2,velocidad_izquierda);
+  analogWrite(PWM1,velocidad_derecha);
 
   digitalWrite(INA1,HIGH);
   digitalWrite(INB1,LOW);
@@ -405,11 +349,11 @@ void prueba_todo(){
 
 void directo(){
   if(calculo_dist_izq()<distancia_maxima){
-    giro_izquierda(200,200,0);
+    giro_izquierda(200,200);
   }else if(calculo_dist_der()<distancia_maxima){
-    giro_derecha(200,200,0);
+    giro_derecha(200,200);
   }else if(calculo_dist_tras()<distancia_maxima){
-    giro_izquierda(200,200,0);
+    giro_izquierda(200,200);
   }else if(calculo_dist(dist_der_cen)<distancia_maxima){
 
   }else if(calculo_dist(dist_izq_cen)<distancia_maxima){
@@ -419,18 +363,18 @@ void directo(){
 
 void directo_2(){
   if(calculo_dist_izq()<distancia_maxima){
-    while(calculo_dist(dist_der_cen)>distancia_maxima|| calculo_dist()>distancia_maxima){
-      giro_izquierda(200,200,0);  
+    while(calculo_dist(dist_der_cen)>distancia_maxima|| calculo_dist(dist_izq_cen)>distancia_maxima){
+      giro_izquierda(200,200);  
     }
     
   }else if(calculo_dist_der()<distancia_maxima){
-     while(calculo_dist(dist_der_cen)>distancia_maxima|| calculo_dist()>distancia_maxima){
-      giro_derecha(200,200,0);  
+     while(calculo_dist(dist_der_cen)>distancia_maxima|| calculo_dist(dist_izq_cen)>distancia_maxima){
+      giro_derecha(200,200);  
     }
 
   }else if(calculo_dist_tras()<distancia_maxima){
-     while(calculo_dist(dist_der_cen)>distancia_maxima|| calculo_dist()>distancia_maxima){
-      giro_izquierda(200,200,0);  
+     while(calculo_dist(dist_der_cen)>distancia_maxima|| calculo_dist(dist_izq_cen)>distancia_maxima){
+      giro_izquierda(200,200);  
     }
     
   }else if(calculo_dist(dist_der_cen)<distancia_maxima){
