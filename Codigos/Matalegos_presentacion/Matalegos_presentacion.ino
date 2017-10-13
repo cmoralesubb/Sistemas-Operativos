@@ -31,9 +31,6 @@ byte out_dist_izq=37;
 byte in_dist_tras=39;
 byte out_dist_tras=41;
 
-
-
-
 // Variables de motores
 byte INA1=22;
 byte INB1=24;
@@ -106,7 +103,9 @@ void setup() {
 
 
 void loop() {
-  atacar_inicio_izquierda();
+  
+  //atacar_inicio_izquierda();
+  avanzar(250,250);
 }
 
 void atacar_inicio_izquierda(){
@@ -169,11 +168,11 @@ void avanzar(byte vel_izquierda,byte vel_derecha ) {
   analogWrite(PWM2,vel_izquierda);
   analogWrite(PWM1,vel_derecha);
 
-  digitalWrite(INA1,HIGH);
-  digitalWrite(INB1,LOW);
+  digitalWrite(INA1,LOW);
+  digitalWrite(INB1,HIGH);
 
-  digitalWrite(INA2,HIGH);
-  digitalWrite(INB2,LOW);
+  digitalWrite(INA2,LOW);
+  digitalWrite(INB2,HIGH);
 
   
 }
@@ -377,10 +376,6 @@ void directo_2(){
       giro_izquierda(200,200);  
     }
     
-  }else if(calculo_dist(dist_der_cen)<distancia_maxima){
-    
-  }else if(calculo_dist(dist_izq_cen)<distancia_maxima){
-
   }
 
 }
@@ -394,6 +389,7 @@ void detener(){
   digitalWrite(INB2,LOW);
 
 }
+
 
 
 

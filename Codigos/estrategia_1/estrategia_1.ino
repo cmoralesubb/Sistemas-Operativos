@@ -171,6 +171,71 @@ void atacar_inicio_izquierda(){
 
 }
 
+void atacar_inicio_izquierda(){
+
+  if (calculo_dist(dist_izq_cen)<distancia_minima && principio==false){
+    giro_izquierda(200,200); // arreglar el grado de izquierda que queda para que gire un poco
+    principio=true;
+  }
+
+  //mientras esta en la pista
+  while(analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t)>linea) {
+    //lee mientras va a la izquierda mirando
+    avanzar(200,200);
+    if(calculo_dist_der()<distancia_media){
+      
+      giro_derecha(200,200); // acomodar hasta encontrar un grado que acomode
+      while(calculo_dist(dist_izq_cen)<distancia_media || calculo_dist(dist_der_cen)<distancia_media && analogRead(lin_d_der)>linea ){
+        avanzar(200,200);
+      }
+    }else if(calculo_dist_izq()<distancia_media){
+      giro_izquierda(200,200);// acomodar hasta encontrar un grado que acomode
+      while(calculo_dist(dist_izq_cen)<distancia_media || calculo_dist(dist_der_cen)<distancia_media && analogRead(lin_d_der)>linea ){
+        avanzar(200,200);
+      }
+    }else if(calculo_dist_tras()<distancia_media){
+      giro_derecha(200,200);// encontrar un grado que acomode y de vuelta completa
+    }
+  }
+
+
+  //0 0 1 si la trasera detecta la linea 
+  if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) > linea && analogRead(lin_t) < linea ) {
+    avanzar(200,200);
+  }
+  
+  //0 1 0
+  if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) < linea && analogRead(lin_t)> linea ) {
+    retroceder(230,230,700);
+    giro_derecha(200,200); // acomodar cuanto es para una vuelta completa 
+    
+  }
+  
+  //0 1 1
+  if (analogRead(lin_d_izq) > linea && analogRead(lin_d_der) < linea && analogRead(lin_t) < linea ) {
+
+  }
+  //1 0 0
+  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) > linea && analogRead(lin_t) > linea ) {
+
+  }
+  //1 0 1
+  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) > linea && analogRead(lin_t) < linea ) {
+
+  }
+  //1 1 0
+  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) < linea && analogRead(lin_t) > linea ) {
+
+  }
+
+  //1 1 1
+  if (analogRead(lin_d_izq) < linea && analogRead(lin_d_der) < linea && analogRead(lin_t) < linea ) { // Caso Imposible
+
+  }
+
+
+}
+
 /*
 
 void Estrategia_1(){
